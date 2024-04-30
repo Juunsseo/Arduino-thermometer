@@ -10,14 +10,14 @@ const float maxTempC = 25.0;
 const int BUZZER_PIN = 5;
 const int red_led = 3;
 
-int melody[] = {
+int melody[] = { //Notes in pitches.h
   NOTE_E5, NOTE_D5, NOTE_FS4, NOTE_GS4, 
   NOTE_CS5, NOTE_B4, NOTE_D4, NOTE_E4, 
   NOTE_B4, NOTE_A4, NOTE_CS4, NOTE_E4,
   NOTE_A4
 };
 
-int durations[] = {
+int durations[] = { //Durations to play each note
   8, 8, 4, 4,
   8, 8, 4, 4,
   8, 8, 4, 4,
@@ -28,8 +28,8 @@ int durations[] = {
 void setup()
 {
   lcd.init(); // initialize the lcd
-  pinMode(red_led, OUTPUT);
-  pinMode(BUZZER_PIN,OUTPUT);
+  pinMode(red_led, OUTPUT); // red led pin to alert
+  pinMode(BUZZER_PIN,OUTPUT); // buzzer pin to alert
 
 }
 void loop()
@@ -37,12 +37,12 @@ void loop()
   int VoltageRead=analogRead(ADCV); //Read ADC value (0-1023)
   float Vo=(VoltageRead/1023.0)*5; //Convert ADC value to voltage
   float TempC=(Vo-0.5)*100 - 1; //Convert TMP36 voltage to temp C
-  lcd.backlight();
-  lcd.setCursor(0,0);
+  lcd.backlight(); //backlight on
+  lcd.setCursor(0,0); //initialize the cursor
   lcd.print("T:"); // Print characters to LCD.
   //lcd.setCursor(1,1);
   lcd.print(TempC); // Print variable value to LCD
-  lcd.print(char(223));
+  lcd.print(char(223)); // the degree sign
   lcd.print("C");
   //lcd.setCursor(10,0)
 
@@ -53,23 +53,21 @@ void loop()
   if(TempC < maxTempC && TempC > minTempC){
     lcd.setCursor(10,0);
     //lcd.print("The temperature is in range.");
-    lcd.print("  OK  ");
+    lcd.print("  OK  "); // display "OK" when temperture is in range
   } else{
     lcd.setCursor(10,0);
-    lcd.print("NOT OK");
+    lcd.print("NOT OK"); // display "NOT OK" when temperture isn't in range
     lcd.setCursor(13,0);
 
     int size = sizeof(durations) / sizeof(int);
     digitalWrite(red_led, HIGH);  // turn the LED on (HIGH is the voltage level)
 
-    for (int note = 0; note < size; note++) { //https://github.com/hibit-dev/buzzer
-      //to calculate the note duration, take one second divided by the note type.
-      //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    for (int note = 0; note < size; note++) { //pitches and notes from https://github.com/hibit-dev/buzzer
+
       int duration = 1000 / durations[note];
       tone(BUZZER_PIN, melody[note], duration);
 
-      //to distinguish the notes, set a minimum time between them.
-      //the note's duration + 30% seems to work well:
+
       int pauseBetweenNotes = duration * 1.30;
       delay(pauseBetweenNotes);
       
@@ -80,5 +78,5 @@ void loop()
     digitalWrite(red_led, LOW);   // turn the LED off by making the voltage LOW
 
   }
-  delay(500);
+  delay(500); // updates the temperture every 0.5s
 }
